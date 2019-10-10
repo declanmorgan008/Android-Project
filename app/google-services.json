@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "306509241243",
+    "firebase_url": "https://samplelogin-68f78.firebaseio.com",
+    "project_id": "samplelogin-68f78",
+    "storage_bucket": "samplelogin-68f78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306509241243:android:ccdd677c2c4a78a0b59f3e",
+        "android_client_info": {
+          "package_name": "com.morgan.declan.samplelogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306509241243-rqfmnttt9ciuctffeaitrm4431hmvkvc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.morgan.declan.samplelogin",
+            "certificate_hash": "d33f9c4777961779e6856300c6b467c8648eff43"
+          }
+        },
+        {
+          "client_id": "306509241243-q89c51hqo6vpd5j40b0mut040gv3j6ok.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-RWkNf-O034RCl4X44gkA819D1OY_4Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306509241243-q89c51hqo6vpd5j40b0mut040gv3j6ok.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
