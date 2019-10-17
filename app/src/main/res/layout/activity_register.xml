@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:padding="16dp"
     tools:context=".LoginActivity"
-    android:background="@drawable/background_selector">
+    android:background="@color/colorPrimary">
 
 
 

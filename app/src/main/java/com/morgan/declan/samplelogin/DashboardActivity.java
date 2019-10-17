@@ -1,7 +1,7 @@
 package com.morgan.declan.samplelogin;
 
+
 import android.os.Bundle;
-import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -10,6 +10,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -29,6 +31,5 @@ public class DashboardActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-
-
+    
 }

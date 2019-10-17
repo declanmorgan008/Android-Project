@@ -9,35 +9,45 @@
     android:padding="16dp"
     tools:context=".RegisterActivity">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register new account" />
+        android:text="Register new account"
+        android:textColor="#ffffff"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
         android:id="@+id/displayName"
-        android:text="Name"/>
+        android:text="Name"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"/>
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email" />
+        android:hint="Email"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"/>
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"/>
 
     <Button
         android:id="@+id/register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register" />
+        android:text="Register"
+        android:background="@drawable/round_button"
+        android:textColor="#ffffff"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

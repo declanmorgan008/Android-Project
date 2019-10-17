@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             Intent goToDashboard = new Intent(getApplicationContext(), DashboardActivity.class);
             startActivity(goToDashboard);
         } else {
-            //No User is Signed in.
+            //No com.morgan.declan.samplelogin.User is Signed in.
         }
 
     }

@@ -45,6 +45,8 @@ public class NotificationsFragment extends Fragment {
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
+
+
             }
         });
 

@@ -23,6 +23,5 @@
         android:layout_height="wrap_content"
         android:text="Sign Out"
         android:id="@+id/signOutBtn"
-
         android:onClick="onClick"/>
 </LinearLayout>

@@ -3,12 +3,15 @@ package com.morgan.declan.samplelogin;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -80,7 +83,11 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+
     }
+
+
 
     private void initializeUI() {
         emailTV = findViewById(R.id.email);

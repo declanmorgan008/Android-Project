@@ -4,22 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     android:gravity="center"
-    tools:context=".MainActivity"
-    android:background="@drawable/background_selector">
-
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/registerBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:text="Register"
-        android:clickable="true"
-        android:id="@+id/registerBtn"/>
+        android:background="@drawable/round_button"
+        android:layout_marginBottom="10dp"
+        android:textColor="#ffffff"/>
+
+
     <Button
+        android:id="@+id/loginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
         android:clickable="true"
-        android:id="@+id/loginBtn"/>
+        android:text="Login"
+        android:background="@drawable/round_button"
+        android:textColor="#ffffff"/>
+
 
 </LinearLayout>

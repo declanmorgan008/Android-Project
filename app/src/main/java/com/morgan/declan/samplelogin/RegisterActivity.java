@@ -3,7 +3,7 @@ package com.morgan.declan.samplelogin;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
+import com.morgan.declan.samplelogin.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -52,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void registerNewUser() {
         progressBar.setVisibility(View.VISIBLE);
 
-        String email, password, displayName;
+        final String email, password, displayName;
         email = emailTV.getText().toString();
         password = passwordTV.getText().toString();
         displayName = nameTV.getText().toString();
@@ -75,6 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
+                            User newUser = new User(displayName, email);
+                            newUser.writeUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
@@ -85,8 +87,6 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-        
     }
 
     private void initializeUI() {
