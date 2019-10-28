@@ -9,4 +9,6 @@
     <string name="title_profile">Profile</string>
     <string name="title_trade">Trade</string>
     <string name="title_sign_out">Sign Out</string>
+    <string name="user_name">Joe Bloggs</string>
+    <string name="your_items">Your items:</string>
 </resources>

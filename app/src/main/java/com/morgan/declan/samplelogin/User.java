@@ -2,11 +2,15 @@ package com.morgan.declan.samplelogin;
 
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+
 public class User {
 
     public String username;
     public String email;
     public long time;
+
+    public ArrayList<Post> userPosts;
 
     public User(){
 
@@ -22,6 +26,8 @@ public class User {
         User newUser = new User(this.username, this.email);
         FirebaseDatabase.getInstance().getReference().child("users").child(userId).setValue(newUser);
     }
+
+
 
 
 }

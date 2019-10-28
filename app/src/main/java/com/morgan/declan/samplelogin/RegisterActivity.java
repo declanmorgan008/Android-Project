@@ -78,8 +78,11 @@ public class RegisterActivity extends AppCompatActivity {
                             User newUser = new User(displayName, email);
                             newUser.writeUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
+                            mAuth.getCurrentUser().updateProfile(profileUpdates);
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
+
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
@@ -87,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
+
     }
 
     private void initializeUI() {
