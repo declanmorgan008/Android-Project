@@ -1,4 +1,4 @@
-package com.morgan.declan.samplelogin.ui.trade;
+package com.morgan.declan.samplelogin.ui.additem;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,9 +21,9 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.morgan.declan.samplelogin.R;
 
 
-public class TradeFragment extends Fragment {
+public class AddItemFragment extends Fragment {
 
-    private TradeViewModel tradeViewModel;
+    private AddItemViewModel tradeViewModel;
 
     private EditText editText, etd;
     private Button button;
@@ -35,9 +35,9 @@ public class TradeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         tradeViewModel =
-                ViewModelProviders.of(this).get(TradeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_trade, container, false);
-        final TextView textView = root.findViewById(R.id.text_trade);
+                ViewModelProviders.of(this).get(AddItemViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_additem, container, false);
+        final TextView textView = root.findViewById(R.id.text_add_item);
 
         tradeViewModel.getText().observe(this, new Observer<String>() {
             @Override
