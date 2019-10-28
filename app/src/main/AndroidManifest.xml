@@ -12,8 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".DashboardActivity"
-            android:label="@string/title_activity_dashboard"></activity>
+            android:name=".SearchActivity"
+            android:label="@string/title_activity_search"></activity>
         <activity
             android:name=".CentralActivity"
             android:label="@string/title_activity_cental" />

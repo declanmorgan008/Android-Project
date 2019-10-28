@@ -12,16 +12,16 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.morgan.declan.samplelogin.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_search"
+        android:name="com.morgan.declan.samplelogin.ui.search.SearchFragment"
+        android:label="@string/title_search"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_trade"
-        android:name="com.morgan.declan.samplelogin.ui.trade.TradeFragment"
-        android:label="@string/title_trade"
-        tools:layout="@layout/fragment_trade" />
+        android:id="@+id/navigation_add_item"
+        android:name="com.morgan.declan.samplelogin.ui.additem.AddItemFragment"
+        android:label="@string/title_add_item"
+        tools:layout="@layout/fragment_additem" />
 
     <fragment
         android:id="@+id/navigation_notifications"
