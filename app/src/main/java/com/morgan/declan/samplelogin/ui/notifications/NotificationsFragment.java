@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +25,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.morgan.declan.samplelogin.ItemArrayAdapter;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import com.morgan.declan.samplelogin.MainActivity;
 import com.morgan.declan.samplelogin.Post;
 import com.morgan.declan.samplelogin.R;

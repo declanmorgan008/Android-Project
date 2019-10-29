@@ -2,8 +2,6 @@ package com.morgan.declan.samplelogin;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            Intent goToDashboard = new Intent(getApplicationContext(), DashboardActivity.class);
+            Intent goToDashboard = new Intent(getApplicationContext(), SearchActivity.class);
             startActivity(goToDashboard);
         } else {
             //No com.morgan.declan.samplelogin.User is Signed in.
