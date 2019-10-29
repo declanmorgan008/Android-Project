@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.morgan.declan.samplelogin.ItemArrayAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.morgan.declan.samplelogin.MainActivity;
 import com.morgan.declan.samplelogin.R;
