@@ -60,8 +60,9 @@ public class NotificationsFragment extends Fragment {
 
         TextView uNameTv = root.findViewById(R.id.username);
         uNameTv.setText(mAuth.getCurrentUser().getDisplayName());
-        recyclerView = root.findViewById(R.id.item_list);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        recyclerView = root.findViewById(R.id.item_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -110,7 +111,8 @@ public class NotificationsFragment extends Fragment {
 
 
     public void fetchData(){
-        String uid = mAuth.getCurrentUser().getUid();
+        System.out.println("******************" + mAuth.getUid());
+        String uid = mAuth.getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference().child("posts").child(uid);
         ValueEventListener postListener = new ValueEventListener() {
@@ -124,7 +126,7 @@ public class NotificationsFragment extends Fragment {
                     Post target =  single.getValue(Post.class);
                     mPostTargetData.add(target);
                 }
-                if(mPostTargetData.size() != 0){
+                if(!mPostTargetData.isEmpty()){
                     mAdapter.notifyDataSetChanged();
                     Log.e("Declan.com", "Data received:" + mPostTargetData.size());
                 }

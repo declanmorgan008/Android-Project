@@ -30,8 +30,8 @@ public class Post {
     public StorageReference pictureReference;
 
     private StorageReference mStorageRef;
-
-    public Post(){
+    public Post(){};
+    public Post(String name, String size, String colour, String brand, String condition, String description){
 
     }
 

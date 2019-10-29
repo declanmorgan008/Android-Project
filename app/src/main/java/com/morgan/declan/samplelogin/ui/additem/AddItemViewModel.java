@@ -10,7 +10,7 @@ public class AddItemViewModel extends ViewModel {
 
     public AddItemViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is the Trade fragment");
+
     }
 
     public LiveData<String> getText() {
