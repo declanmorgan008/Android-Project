@@ -9,6 +9,12 @@
     <string name="title_profile">Profile</string>
     <string name="title_add_item">Add Item</string>
     <string name="title_sign_out">Sign Out</string>
-    <string name="user_name">Joe Bloggs</string>
-    <string name="your_items">Your items:</string>
+    <string name="add_item_name">Name</string>
+    <string name="add_item_size">Size</string>
+    <string name="add_item_brand">Brand</string>
+    <string name="add_item_colour">Colour</string>
+    <string name="add_item_condition">Condition</string>
+    <string name="add_item_description">Description</string>
+    <string name="your_items">Your items</string>
+
 </resources>

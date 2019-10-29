@@ -63,12 +63,12 @@ public class Post {
         mStorageRef = FirebaseStorage.getInstance().getReference();
         Post newPost = myPost;
         Log.e("sampleLogIn", this.getPostTitle() + ", "
-                        + ", "  + this.getPid()
-                        + ", "  +               this.getBrand()
-                        + ", "  +               this.getColour()
-                        + ", "  +              this.getCondition()
-                        + ", "  +               this.getSize()
-                        + ", "  + this.getPicture());
+                + ", "  + this.getPid()
+                + ", "  +               this.getBrand()
+                + ", "  +               this.getColour()
+                + ", "  +              this.getCondition()
+                + ", "  +               this.getSize()
+                + ", "  + this.getPicture());
 
         FirebaseDatabase.getInstance().getReference().child("posts").child(uid).child(newPost.getPid()).setValue(newPost);
         Log.e("sampleLogIn", "Completed Post Upload");
@@ -129,7 +129,7 @@ public class Post {
     }
 
     public void setPid(){
-       this.pid = FirebaseDatabase.getInstance().getReference().child("posts").push().getKey();
+        this.pid = FirebaseDatabase.getInstance().getReference().child("posts").push().getKey();
     }
 
 
