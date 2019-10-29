@@ -25,7 +25,6 @@ public class Post {
         this.description = description;
 
     }
-
     public void postToDatabase (){
         Post myPost = new Post(this.postTitle, this.size, this.colour, this.brand, this.condition, this.description);
         String postId = FirebaseDatabase.getInstance().getReference().child("posts").push().getKey();
