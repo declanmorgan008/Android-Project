@@ -1,12 +1,6 @@
 package com.morgan.declan.samplelogin;
-
-
-
 import com.google.firebase.database.IgnoreExtraProperties;
 
-/**
- * Created by Belal on 2/23/2017.
- */
 @IgnoreExtraProperties
 public class Upload{
 
