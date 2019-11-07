@@ -1,9 +1,15 @@
 package com.morgan.declan.samplelogin.ui.notifications;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -19,6 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,12 +61,15 @@ public class NotificationsFragment extends Fragment {
     private List<Upload> uploads;
 
     private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
+    private FusedLocationProviderClient fusedLocationClient;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         notificationsViewModel =
                 ViewModelProviders.of(this).get(NotificationsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        setHasOptionsMenu(true);
+
 
         TextView uNameTv = root.findViewById(R.id.username);
         uNameTv.setText(mAuth.getCurrentUser().getDisplayName());
@@ -66,49 +79,57 @@ public class NotificationsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-
-
         uploads = new ArrayList<>();
-
-
-
         recyclerView.setAdapter(mAdapter);
         fetchData();
 
 
-        Button clickButton = root.findViewById(R.id.signOutBtn);
-        clickButton.setOnClickListener( new View.OnClickListener() {
-
+        recyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
+            public void onClick(View view) {
+                Log.i("INFO", "Clicked on card.");
             }
         });
 
-        Button retrieveUsername = root.findViewById(R.id.retrieve_username);
-        retrieveUsername.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
 
         return root;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        mAdapter = new ItemArrayAdapter(getContext(),mPostTargetData, uploads, R.layout.dashboard_item);
+
+        //adding adapter to recyclerview
+        recyclerView.setAdapter(mAdapter);
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        fetchData();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_sign_out:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        return false;
+    }
 
     public void fetchData(){
         System.out.println("******************" + mAuth.getUid());
@@ -119,18 +140,10 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPostTargetData.clear();
-
-//                Post target = dataSnapshot.getValue(Post.class);
-//                mPostTargetData.add(target);
                 for (DataSnapshot single : dataSnapshot.getChildren()) {
                     Post target =  single.getValue(Post.class);
                     mPostTargetData.add(target);
                 }
-                if(!mPostTargetData.isEmpty()){
-                    mAdapter.notifyDataSetChanged();
-                    Log.e("Declan.com", "Data received:" + mPostTargetData.size());
-                }
-
 
             }
 
@@ -139,7 +152,7 @@ public class NotificationsFragment extends Fragment {
                 Log.w("Declan.com", "fetchData onCancelled", databaseError.toException());
             }
         };
-        myRef.addListenerForSingleValueEvent(postListener);
+        myRef.addValueEventListener(postListener);
 
 
         DatabaseReference dRef = FirebaseDatabase.getInstance().getReference("picture_uploads").child(uid);
@@ -155,7 +168,7 @@ public class NotificationsFragment extends Fragment {
 
                 Log.e("SizeOfUploads_DC" , "" + uploads.size());
                 //creating adapter
-                mAdapter = new ItemArrayAdapter(getContext(),mPostTargetData, uploads);
+                mAdapter = new ItemArrayAdapter(getContext(),mPostTargetData, uploads, R.layout.list_item);
 
                 //adding adapter to recyclerview
                 recyclerView.setAdapter(mAdapter);
@@ -171,6 +184,7 @@ public class NotificationsFragment extends Fragment {
     private class PostHolder extends RecyclerView.ViewHolder {
         private TextView titleTextView, descTextView;
 
+
         PostHolder(View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.item_title);
@@ -183,6 +197,7 @@ public class NotificationsFragment extends Fragment {
             String desc = userPost.getDescription();
             descTextView.setText(desc);
         }
+
     }
 
 

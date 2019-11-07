@@ -1,16 +1,22 @@
 package com.morgan.declan.samplelogin.ui.additem;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +42,9 @@ import com.morgan.declan.samplelogin.R;
 import com.morgan.declan.samplelogin.Upload;
 import com.morgan.declan.samplelogin.ui.home.HomeViewModel;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class AddItemFragment extends Fragment {
@@ -54,7 +62,10 @@ public class AddItemFragment extends Fragment {
     private FloatingActionButton buttonUpload;
     //uri to store file
     private Uri filePath;
+    private View rootView;
     private final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    private Spinner sizeSpinner;
+    private String sizeSelected;
 
     private AddItemViewModel addItemViewModel;
 
@@ -67,9 +78,24 @@ public class AddItemFragment extends Fragment {
         buttonChoose = root.findViewById(R.id.choose_image);
         buttonUpload = root.findViewById(R.id.floatingAddPostButton);
 
-
+        rootView = root;
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        sizeSpinner = root.findViewById(R.id.addItemSize);
+
+        sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                sizeSelected = sizeSpinner.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
 
         buttonChoose.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -85,24 +111,15 @@ public class AddItemFragment extends Fragment {
             }
         });
 
-
-
-
-//        postButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getContext(),"well hello",Toast.LENGTH_SHORT).show();
-//                postItem(root);
-//            }
-//        });
-
         return root;
     }
+
+
     private void postItem(View root){
         EditText nameText = root.findViewById(R.id.addItemName);
         String name = nameText.getText().toString();
-        EditText sizeText = root.findViewById(R.id.addItemSize);
-        String size = sizeText.getText().toString();
+//        sizeSpinner = root.findViewById(R.id.addItemSize);
+//        String size = sizeText.getText().toString();
         EditText brandText = root.findViewById(R.id.addItemBrand);
         String brand = brandText.getText().toString();
         EditText colourText = root.findViewById(R.id.addItemColour);
@@ -111,7 +128,7 @@ public class AddItemFragment extends Fragment {
         String condition = conditionText.getText().toString();
         EditText descriptionText = root.findViewById(R.id.addItemDescription);
         String description = descriptionText.getText().toString();
-        Post post = new Post(name,size,colour,brand,condition,description);
+        Post post = new Post(name,sizeSelected,colour,brand,condition,description);
         post.postToDatabase(post);
     }
 
@@ -127,6 +144,17 @@ public class AddItemFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 234 && data != null && data.getData() != null) {
             filePath = data.getData();
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                ImageView imageView = rootView.findViewById(R.id.image_preview);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -142,8 +170,6 @@ public class AddItemFragment extends Fragment {
 
         EditText nameText = root.findViewById(R.id.addItemName);
         String name = nameText.getText().toString();
-        EditText sizeText = root.findViewById(R.id.addItemSize);
-        String size = sizeText.getText().toString();
         EditText brandText = root.findViewById(R.id.addItemBrand);
         String brand = brandText.getText().toString();
         EditText colourText = root.findViewById(R.id.addItemColour);
@@ -161,7 +187,7 @@ public class AddItemFragment extends Fragment {
             progressDialog.setTitle("Uploading");
             progressDialog.show();
             final Post myPost =  new Post(name,
-                    size,
+                    sizeSelected,
                     colour,
                     brand, condition,
                     description,
@@ -216,7 +242,7 @@ public class AddItemFragment extends Fragment {
                         }
                     });
         } else {
-            //display an error if no file is selected
+            Toast.makeText(getActivity(), "Select a picture and try again.", Toast.LENGTH_SHORT).show();
         }
     }
 

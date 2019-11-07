@@ -17,4 +17,15 @@
     <string name="add_item_colour">Colour</string>
     <string name="add_item_condition">Condition</string>
     <string name="add_item_description">Description</string>
+
+    <string name="size_prompt">Choose a size</string>
+
+    <string-array name="size_array">
+        <item>Extra Small</item>
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>Extra Large</item>
+    </string-array>
+
 </resources>
