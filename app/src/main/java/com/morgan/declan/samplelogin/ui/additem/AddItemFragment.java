@@ -47,6 +47,7 @@ import com.morgan.declan.samplelogin.R;
 import com.morgan.declan.samplelogin.Upload;
 import com.morgan.declan.samplelogin.ui.home.HomeViewModel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -121,7 +122,11 @@ public class AddItemFragment extends Fragment {
         buttonUpload.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                uploadFile(root);
+                try {
+                    uploadFile(root);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         buttonTakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -225,7 +230,7 @@ public class AddItemFragment extends Fragment {
 ////            Bitmap imageBitmap = (Bitmap) extras.get("data");
 //
 //            imageView.setImageURI(filePath);
-            galleryAddPic();
+ //           galleryAddPic();
         }
     }
     private void galleryAddPic() {
@@ -243,7 +248,7 @@ public class AddItemFragment extends Fragment {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
-    private void uploadFile(View root) {
+    private void uploadFile(View root) throws IOException {
 
         EditText nameText = root.findViewById(R.id.addItemName);
         String name = nameText.getText().toString();
@@ -273,9 +278,14 @@ public class AddItemFragment extends Fragment {
             myPost.setPid();
             final StorageReference sRef = mStorageReference.child("uploads/" + myPost.getPid() + "." + getFileExtension(filePath));
 
+            //Resizing images for faster upload and retrieval times.
+            Bitmap bmpImage = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bmpImage.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+            byte[] data = baos.toByteArray();
 
             //adding the file to reference
-            sRef.putFile(filePath)
+            sRef.putBytes(data)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
