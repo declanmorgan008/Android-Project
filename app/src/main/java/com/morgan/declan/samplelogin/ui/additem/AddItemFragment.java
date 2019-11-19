@@ -49,6 +49,7 @@ import com.morgan.declan.samplelogin.ui.home.HomeViewModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,7 +174,7 @@ public class AddItemFragment extends Fragment {
                 Uri photoURI = FileProvider.getUriForFile(getContext(),
                         "com.example.android.fileprovider",
                         photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
@@ -212,12 +213,18 @@ public class AddItemFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-//            filePath = data.getData();
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK  ) {
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ImageView imageView = rootView.findViewById(R.id.image_preview);
+            imageView.setImageBitmap(imageBitmap);
+            File file = new File(Environment.getExternalStorageDirectory().getPath(), currentPhotoPath);
+            filePath = Uri.fromFile(file);
 //            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            ImageView imageView = rootView.findViewById(R.id.image_preview);
-//            imageView.setImageBitmap(imageBitmap);
+////            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//
+//            imageView.setImageURI(filePath);
             galleryAddPic();
         }
     }
