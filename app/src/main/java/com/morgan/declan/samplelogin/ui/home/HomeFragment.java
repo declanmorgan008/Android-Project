@@ -26,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.core.Constants;
 import com.google.firebase.storage.FirebaseStorage;
@@ -37,6 +38,7 @@ import com.morgan.declan.samplelogin.MainActivity;
 import com.morgan.declan.samplelogin.Post;
 import com.morgan.declan.samplelogin.R;
 import com.morgan.declan.samplelogin.Upload;
+import com.morgan.declan.samplelogin.User;
 import com.morgan.declan.samplelogin.ui.notifications.NotificationsViewModel;
 
 import java.io.Console;
@@ -71,6 +73,7 @@ public class HomeFragment extends Fragment {
     private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseDatabase mref;
+    private DatabaseReference mDatabase;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -83,12 +86,15 @@ public class HomeFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         uploads = new ArrayList<>();
         recyclerView.setAdapter(mAdapter);
         fetchData();
 
         return root;
     }
+
 
     public void fetchData(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -118,6 +124,7 @@ public class HomeFragment extends Fragment {
             }
         };
         myRef.addValueEventListener(postListener);
+
 
 
         DatabaseReference dRef = FirebaseDatabase.getInstance().getReference("picture_uploads");
