@@ -1,8 +1,24 @@
 package com.morgan.declan.samplelogin;
 
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.morgan.declan.samplelogin.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -14,37 +30,58 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText emailTV, passwordTV, nameTV;
     private Button regBtn;
     private ProgressBar progressBar;
+    private Button userDP;
+    private Uri filePath;
+    private StorageReference mStorageReference;
+    private DatabaseReference mDatabase;
+    private Uri userDownloadUri;
 
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-
+        userDP = findViewById(R.id.choose_dp_button);
         initializeUI();
+
+        userDownloadUri = Uri.parse("http://www.google.com");
 
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 registerNewUser();
+            }
+        });
+
+        userDP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFileChooser();
             }
         });
     }
@@ -57,22 +94,32 @@ public class RegisterActivity extends AppCompatActivity {
         password = passwordTV.getText().toString();
         displayName = nameTV.getText().toString();
 
+        if(TextUtils.isEmpty(displayName)){
+            Toast.makeText(getApplicationContext(), "Please enter username.", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Please enter email.", Toast.LENGTH_LONG).show();
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Please enter password.", Toast.LENGTH_LONG).show();
             return;
         }
+        if(filePath == null){
+            Toast.makeText(getApplicationContext(), "Please select an image and try again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
 
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-
+                    Uri userUri;
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
                             User newUser = new User(displayName, email);
@@ -80,6 +127,62 @@ public class RegisterActivity extends AppCompatActivity {
 
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
                             mAuth.getCurrentUser().updateProfile(profileUpdates);
+
+
+                            if (filePath != null) {
+                                //displaying progress dialog while image is uploading
+
+                                Log.e("FilePath: ", filePath.toString());
+                                Log.e("Current User: ", mAuth.getCurrentUser().getEmail());
+                                final StorageReference sRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid());
+
+                                Bitmap bmpImage = null;
+                                try {
+                                    bmpImage = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                bmpImage.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                                byte[] data = baos.toByteArray();
+                                //adding the file to reference
+                                sRef.putBytes(data)
+                                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                sRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        final Uri downloadUri = uri;
+                                                        userUri = downloadUri;
+
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference dbRef = database.getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("photoUri");
+                                                        Log.e("user download url: ", userUri.toString());
+                                                        dbRef.setValue(userUri.toString());
+                                                        //dismissing the progress dialog
+                                                        //displaying success toast
+                                                        Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+                                                        //Add user dp url to user class
+                                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
+                                                        mAuth.getCurrentUser().updateProfile(profileUpdates);
+                                                    }
+                                                });
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+
+                                                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Select a picture and try again.", Toast.LENGTH_SHORT).show();
+                            }
+
+
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
 
@@ -91,6 +194,38 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 234);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 234 && data != null && data.getData() != null) {
+            filePath = data.getData();
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                ImageView imageView = findViewById(R.id.displayPicture);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public String getFileExtension(Uri uri) {
+        ContentResolver cR = this.getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
     private void initializeUI() {

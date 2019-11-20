@@ -38,6 +38,15 @@
                 android:text="Choose Image"
                 android:textColor="#ffffff" />
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_button"
+                android:textColor="#ffffff"
+                android:text="Take Picture"
+                android:id="@+id/take_picture"
+                android:clickable="true"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
         <TextView

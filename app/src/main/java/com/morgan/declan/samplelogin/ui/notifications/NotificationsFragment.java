@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -25,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,6 +45,7 @@ import com.morgan.declan.samplelogin.Post;
 import com.morgan.declan.samplelogin.R;
 import com.morgan.declan.samplelogin.Upload;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +68,8 @@ public class NotificationsFragment extends Fragment {
     private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
     private FusedLocationProviderClient fusedLocationClient;
 
+    private ImageView profilePic;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         notificationsViewModel =
@@ -73,6 +80,9 @@ public class NotificationsFragment extends Fragment {
 
         TextView uNameTv = root.findViewById(R.id.username);
         uNameTv.setText(mAuth.getCurrentUser().getDisplayName());
+
+        profilePic = root.findViewById(R.id.profile_picture);
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         recyclerView = root.findViewById(R.id.item_list);
@@ -133,6 +143,8 @@ public class NotificationsFragment extends Fragment {
 
     public void fetchData(){
         System.out.println("******************" + mAuth.getUid());
+        Uri photo_url = mAuth.getCurrentUser().getPhotoUrl();
+        Glide.with(getContext()).load(photo_url).into(profilePic);
         String uid = mAuth.getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference().child("posts").child(uid);
