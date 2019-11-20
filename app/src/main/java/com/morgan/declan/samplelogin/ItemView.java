@@ -3,6 +3,7 @@ package com.morgan.declan.samplelogin;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ public class ItemView extends AppCompatActivity {
     List<Upload> uploads;
     private String uid;
     private String contactEmail;
+    private Button nextCardBtn;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +41,14 @@ public class ItemView extends AppCompatActivity {
         Integer myInt = getIntent().getIntExtra("Description", 0);
         setContentView(R.layout.activity_item_view);
 
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading Image, please wait...");
+        dialog.show();
         String imageURL = getIntent().getStringExtra("imageURL");
         Log.d("IMAGE URL ", imageURL);
         ImageView ig = findViewById(R.id.postImage);
         Glide.with(this).load(imageURL).into(ig);
+        dialog.dismiss();
 
         title = findViewById(R.id.post_view_title);
         final String postTitle = getIntent().getStringExtra("postTitle");
@@ -56,8 +63,11 @@ public class ItemView extends AppCompatActivity {
         this.uid = getIntent().getStringExtra("uid");
         getEmailFromPost();
 
-        Button contactSellerBtn = findViewById(R.id.contact_seller_btn);
-        contactSellerBtn.setOnClickListener(new View.OnClickListener() {
+
+
+        TextView contactSeller = findViewById(R.id.contact_seller_btn);
+       // Button contactSellerBtn = findViewById(R.id.contact_seller_btn);
+        contactSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

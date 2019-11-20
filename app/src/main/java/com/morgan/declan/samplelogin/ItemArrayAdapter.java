@@ -3,6 +3,7 @@ package com.morgan.declan.samplelogin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -20,6 +21,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import com.morgan.declan.samplelogin.ui.home.HomeFragment;
 
 import java.util.ArrayList;
@@ -34,6 +43,9 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
      List<Upload> uploads;
     public Integer activityToPopulate;
     private Boolean dashboardPopuate;
+    private DatabaseReference mDatabase;
+    String userPhotoUri;
+    ViewHolder vH;
 
     public ItemArrayAdapter(Context context, ArrayList<Post> mTargetData, List<Upload> uploads, Integer populateActivity) {
         this.context = context;
@@ -54,6 +66,8 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View v= LayoutInflater.from(viewGroup.getContext()).inflate(activityToPopulate,viewGroup,false);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        userPhotoUri = null;
         return new ViewHolder(v, activityToPopulate);
     }
 
@@ -61,15 +75,55 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Log.e("Com.Declan.ONBINDVIEW", "" + i);
         Log.e("sizeOfUpload", "" + uploads.size());
-        Upload upload = uploads.get(i);
 
-        String pid_from_upload = upload.getPost_id();
-        Glide.with(context).load(upload.getUrl()).into(viewHolder.imageView);
+        if(uploads.size() == 0){
 
-        Post post = targetsArrayList.get(i);
-        Log.e("Declan.com", "Is array list empty ????:" + post.getPostTitle());
-        viewHolder.setDetails(post, activityToPopulate);
+        }else {
 
+
+            Upload upload = uploads.get(i);
+
+            String pid_from_upload = upload.getPost_id();
+            Glide.with(context).load(upload.getUrl()).into(viewHolder.imageView);
+
+            vH = viewHolder;
+
+            if(activityToPopulate == R.layout.dashboard_item) {
+                mDatabase.child("users").child(targetsArrayList.get(i).getUid()).child("photoUri").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        userPhotoUri = dataSnapshot.getValue(String.class);
+//                User myUser = dataSnapshot.getValue(User.class);
+//                userPhotoUri = myUser.photoUri;
+                        Glide.with(context).load(userPhotoUri).into(vH.userDP);
+//                        Log.e("uri: ", userPhotoUri);
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                mDatabase.child("users").child(targetsArrayList.get(i).getUid()).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String username = dataSnapshot.getValue(String.class);
+                        vH.username.setText(username);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            Post post = targetsArrayList.get(i);
+            Log.e("Declan.com", "Is array list empty ????:" + post.getPostTitle());
+            viewHolder.setDetails(post, activityToPopulate);
+        }
     }
 
     @Override
@@ -81,8 +135,8 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
 
     // Static inner class to initialize the views of rows
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        protected TextView item, desc, size, brand, condition;
-        protected ImageView imageView;
+        protected TextView item, desc, size, brand, condition, username;
+        protected ImageView imageView, userDP;
         protected Integer activity;
 
         public ViewHolder(final View itemView, Integer test) {
@@ -93,6 +147,8 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
             item = itemView.findViewById(R.id.item_title);
             desc = itemView.findViewById(R.id.item_desc);
             imageView = itemView.findViewById(R.id.imageView);
+            userDP = itemView.findViewById(R.id.user_dp);
+            username = itemView.findViewById(R.id.usernameTV);
             this.activity = test;
             Log.e("FRAGMENT", test.toString() + ", " + R.layout.fragment_dashboard);
             if(this.activity == R.layout.dashboard_item){

@@ -51,6 +51,7 @@ import com.morgan.declan.samplelogin.ui.home.HomeViewModel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -129,6 +130,7 @@ public class AddItemFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             }
         });
         buttonTakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -281,12 +283,10 @@ public class AddItemFragment extends Fragment {
             Log.e("test",filePath.toString());
             final StorageReference sRef = mStorageReference.child("uploads/" + myPost.getPid() + "." + getFileExtension(filePath));
 
-    //        Resizing images for faster upload and retrieval times.
             Bitmap bmpImage = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bmpImage.compress(Bitmap.CompressFormat.JPEG, 25, baos);
             byte[] data = baos.toByteArray();
-            Toast.makeText(getActivity(), filePath.toString(), Toast.LENGTH_SHORT).show();
 
             //adding the file to reference
             sRef.putBytes(data)
