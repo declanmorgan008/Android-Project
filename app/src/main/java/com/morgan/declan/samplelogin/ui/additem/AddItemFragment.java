@@ -6,10 +6,12 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -179,7 +181,7 @@ public class AddItemFragment extends Fragment {
                 Uri photoURI = FileProvider.getUriForFile(getContext(),
                         "com.example.android.fileprovider",
                         photoFile);
-
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
@@ -199,6 +201,7 @@ public class AddItemFragment extends Fragment {
 
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
+        Toast.makeText(getContext(), currentPhotoPath, Toast.LENGTH_LONG).show();
         return image;
     }
 
@@ -220,23 +223,22 @@ public class AddItemFragment extends Fragment {
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK  ) {
 
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ImageView imageView = rootView.findViewById(R.id.image_preview);
-            imageView.setImageBitmap(imageBitmap);
-            File file = new File(Environment.getExternalStorageDirectory().getPath(), currentPhotoPath);
-            filePath = Uri.fromFile(file);
 //            Bundle extras = data.getExtras();
-////            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//
-//            imageView.setImageURI(filePath);
- //           galleryAddPic();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            File imgFile = new  File(currentPhotoPath);
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            ImageView imageView = rootView.findViewById(R.id.image_preview);
+            imageView.setImageBitmap(myBitmap);
+       //     File file = new File(Environment.getExternalStorageDirectory().getPath(), currentPhotoPath);
+            filePath = Uri.fromFile(imgFile);
+            galleryAddPic();
         }
     }
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(currentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
+        currentPhotoPath = f.getPath();
         mediaScanIntent.setData(contentUri);
         getContext().sendBroadcast(mediaScanIntent);
     }
@@ -276,13 +278,15 @@ public class AddItemFragment extends Fragment {
                     currentUser.getUid());
             //getting the storage reference
             myPost.setPid();
+            Log.e("test",filePath.toString());
             final StorageReference sRef = mStorageReference.child("uploads/" + myPost.getPid() + "." + getFileExtension(filePath));
 
-            //Resizing images for faster upload and retrieval times.
+    //        Resizing images for faster upload and retrieval times.
             Bitmap bmpImage = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bmpImage.compress(Bitmap.CompressFormat.JPEG, 25, baos);
             byte[] data = baos.toByteArray();
+            Toast.makeText(getActivity(), filePath.toString(), Toast.LENGTH_SHORT).show();
 
             //adding the file to reference
             sRef.putBytes(data)
