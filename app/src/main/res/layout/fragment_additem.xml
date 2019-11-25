@@ -21,112 +21,151 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center_horizontal" />
-
-            <ImageButton
-                android:id="@+id/take_photo"
+#
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+                <Button
+                    android:id="@+id/choose_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/round_button"
+                    android:clickable="true"
+                    android:text="Choose Image"
+                    android:textColor="#ffffff"
+                    android:layout_marginRight="5dp"
+                    android:textSize="12sp"/>
 
-            <Button
-                android:id="@+id/choose_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_button"
-                android:clickable="true"
-                android:text="Choose Image"
-                android:textColor="#ffffff" />
-                android:layout_gravity="center_horizontal"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/round_button"
-                android:textColor="#ffffff"
-                android:text="Take Picture"
-                android:id="@+id/take_picture"
-                android:clickable="true"
-                android:layout_gravity="center_horizontal"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/round_button"
+                    android:textColor="#ffffff"
+                    android:text="Take Picture"
+                    android:id="@+id/take_photo"
+                    android:clickable="true"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="12sp"/>
+            </LinearLayout>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/text_add_item"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="20sp" />
+            app:cardCornerRadius="10dp"
+            android:layout_margin="10dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="5dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Title: "
+                        android:textSize="16sp"/>
+                    <EditText
+                        android:id="@+id/addItemName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_item_name"
+                        android:inputType="textShortMessage" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Description: "
+                        android:textSize="16sp"/>
+                    <EditText
+                        android:id="@+id/addItemDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_item_description" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Colour: "
+                        android:textSize="16sp"/>
+                    <EditText
+                        android:id="@+id/addItemColour"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_item_colour"
+                        android:inputType="textShortMessage" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Brand: "
+                        android:textSize="16sp"/>
+                    <EditText
+                        android:id="@+id/addItemBrand"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_item_brand"
+                        android:inputType="textShortMessage|textPersonName" />
+                </LinearLayout>
 
-        <EditText
-            android:id="@+id/addItemName"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
-            android:ems="10"
-            android:hint="@string/add_item_name"
-            android:inputType="textShortMessage" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Size:"/>
-        <Spinner
-            android:id="@+id/addItemSize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/size_array"
-            android:prompt="@string/size_prompt"/>
-<!--        <EditText-->
-<!--            android:id="@+id/addItemSize"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            android:ems="10"-->
-<!--            android:hint="@string/add_item_size"-->
-<!--            android:inputType="textShortMessage" />-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Condition: "
+                        android:textSize="16sp"/>
+                    <Spinner
+                        android:id="@+id/add_item_condition"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/condition_array" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Size: "
+                        android:textSize="16sp"
+                        android:paddingLeft="10dp"/>
+                    <Spinner
+                        android:id="@+id/addItemSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/size_array"
+                        android:prompt="@string/size_prompt"/>
+                </LinearLayout>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Post"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/round_button"
+                    android:textColor="#ffffff"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/upload_post_btn"
+                    android:textSize="12sp"/>
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/addItemBrand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ems="10"
-            android:hint="@string/add_item_brand"
-            android:inputType="textShortMessage|textPersonName" />
-
-        <EditText
-            android:id="@+id/addItemCondition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ems="10"
-            android:hint="@string/add_item_condition"
-            android:inputType="textShortMessage" />
-
-        <EditText
-            android:id="@+id/addItemDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ems="10"
-            android:hint="@string/add_item_description" />
-
-        <EditText
-            android:id="@+id/addItemColour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ems="10"
-            android:hint="@string/add_item_colour"
-            android:inputType="textShortMessage" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingAddPostButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            app:backgroundTint="@color/colorAccent"
-            app:srcCompat="@drawable/ic_add_item_post_black_24dp"
-            android:layout_marginBottom="120dp"/>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </ScrollView>

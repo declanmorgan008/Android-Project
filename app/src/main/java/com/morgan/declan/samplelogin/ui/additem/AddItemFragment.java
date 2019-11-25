@@ -75,14 +75,14 @@ public class AddItemFragment extends Fragment {
     private String et_desc_text;
 
     private Button buttonChoose;
-    private FloatingActionButton buttonUpload;
-    private ImageButton buttonTakePhoto;
+    private Button buttonUpload;
+    private Button buttonTakePhoto;
     //uri to store file
     private Uri filePath;
     private View rootView;
     private final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-    private Spinner sizeSpinner;
-    private String sizeSelected;
+    private Spinner sizeSpinner, conditionSpinner;
+    private String sizeSelected, conditionSelected;
 
     private AddItemViewModel addItemViewModel;
 
@@ -94,13 +94,14 @@ public class AddItemFragment extends Fragment {
 
         buttonChoose = root.findViewById(R.id.choose_image);
         buttonTakePhoto = root.findViewById(R.id.take_photo);
-        buttonUpload = root.findViewById(R.id.floatingAddPostButton);
+        buttonUpload = root.findViewById(R.id.upload_post_btn);
 
         rootView = root;
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         sizeSpinner = root.findViewById(R.id.addItemSize);
+        conditionSpinner = root.findViewById(R.id.add_item_condition);
 
         sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -111,6 +112,18 @@ public class AddItemFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
+            }
+
+        });
+        conditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                conditionSelected = conditionSpinner.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                conditionSelected = null;
             }
 
         });
@@ -137,28 +150,11 @@ public class AddItemFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dispatchTakePictureIntent();
+
             }
         });
 
         return root;
-    }
-
-
-    private void postItem(View root){
-        EditText nameText = root.findViewById(R.id.addItemName);
-        String name = nameText.getText().toString();
-//        sizeSpinner = root.findViewById(R.id.addItemSize);
-//        String size = sizeText.getText().toString();
-        EditText brandText = root.findViewById(R.id.addItemBrand);
-        String brand = brandText.getText().toString();
-        EditText colourText = root.findViewById(R.id.addItemColour);
-        String colour = colourText.getText().toString();
-        EditText conditionText = root.findViewById(R.id.addItemCondition);
-        String condition = conditionText.getText().toString();
-        EditText descriptionText = root.findViewById(R.id.addItemDescription);
-        String description = descriptionText.getText().toString();
-        Post post = new Post(name,sizeSelected,colour,brand,condition,description);
-        post.postToDatabase(post);
     }
 
     private void showFileChooser() {
@@ -253,15 +249,12 @@ public class AddItemFragment extends Fragment {
     }
 
     private void uploadFile(View root) throws IOException {
-
         EditText nameText = root.findViewById(R.id.addItemName);
         String name = nameText.getText().toString();
         EditText brandText = root.findViewById(R.id.addItemBrand);
         String brand = brandText.getText().toString();
         EditText colourText = root.findViewById(R.id.addItemColour);
         String colour = colourText.getText().toString();
-        EditText conditionText = root.findViewById(R.id.addItemCondition);
-        String condition = conditionText.getText().toString();
         EditText descriptionText = root.findViewById(R.id.addItemDescription);
         String description = descriptionText.getText().toString();
 
@@ -275,7 +268,7 @@ public class AddItemFragment extends Fragment {
             final Post myPost =  new Post(name,
                     sizeSelected,
                     colour,
-                    brand, condition,
+                    brand, conditionSelected,
                     description,
                     currentUser.getUid());
             //getting the storage reference
@@ -287,6 +280,7 @@ public class AddItemFragment extends Fragment {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bmpImage.compress(Bitmap.CompressFormat.JPEG, 25, baos);
             byte[] data = baos.toByteArray();
+
 
             //adding the file to reference
             sRef.putBytes(data)

@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    android:layout_margin="10dp">
 
 
     <LinearLayout
@@ -48,31 +50,34 @@
             android:paddingLeft="10dp">
             <TextView
                 android:id="@+id/item_title"
-                android:layout_width="130dp"
-                android:layout_height="50dp"
-                android:textSize="15sp"
-                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
                 android:textStyle="bold" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/item_desc" />
+                android:id="@+id/item_desc"
+                android:textSize="14sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/item_size"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textSize="14sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/item_brand"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textSize="14sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/item_condition"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textSize="14sp"/>
 
 
         </LinearLayout>

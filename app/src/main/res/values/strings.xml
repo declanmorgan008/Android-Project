@@ -18,6 +18,8 @@
     <string name="add_item_condition">Condition</string>
     <string name="add_item_description">Description</string>
 
+    <string name="password_reset"><u>Forgot password?</u></string>
+
     <string name="size_prompt">Choose a size</string>
 
     <string-array name="size_array">
@@ -27,5 +29,12 @@
         <item>Large</item>
         <item>Extra Large</item>
     </string-array>
+
+    <string-array name="condition_array">
+        <item>New</item>
+        <item>Used</item>
+    </string-array>
+    <string name="title_activity_search_results">SearchResults</string>
+    <string name="title_activity_manage_posts">"Manage Posts "</string>
 
 </resources>

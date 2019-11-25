@@ -20,19 +20,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import com.morgan.declan.samplelogin.ui.home.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 
@@ -89,15 +90,15 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
             vH = viewHolder;
 
             if(activityToPopulate == R.layout.dashboard_item) {
-                mDatabase.child("users").child(targetsArrayList.get(i).getUid()).child("photoUri").addListenerForSingleValueEvent(new ValueEventListener() {
+                mDatabase.child("users").child(targetsArrayList.get(i).getUid()).child("photoUri")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         userPhotoUri = dataSnapshot.getValue(String.class);
-//                User myUser = dataSnapshot.getValue(User.class);
-//                userPhotoUri = myUser.photoUri;
-                        Glide.with(context).load(userPhotoUri).into(vH.userDP);
-//                        Log.e("uri: ", userPhotoUri);
-
+                        Glide.with(context)
+                                .load(userPhotoUri)
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(vH.userDP);
                     }
 
                     @Override

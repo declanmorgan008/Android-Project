@@ -43,7 +43,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/round_button"
+                android:background="@drawable/round_button_transparent"
                 android:layout_gravity="center_horizontal"
                 android:textColor="#ffffff"
                 android:text="Choose Display Image"
@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Register"
-                android:background="@drawable/round_button"
+                android:background="@drawable/round_button_transparent"
                 android:textColor="#ffffff"/>
 
             <ProgressBar

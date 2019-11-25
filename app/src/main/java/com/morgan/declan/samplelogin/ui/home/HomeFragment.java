@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -75,6 +76,7 @@ public class HomeFragment extends Fragment {
     private FirebaseDatabase mref;
     private DatabaseReference mDatabase;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -83,9 +85,8 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         recyclerView = root.findViewById(R.id.dashboard_list);
         recyclerView.setHasFixedSize(true);
-        layoutManager.setReverseLayout(true);
+        //layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         uploads = new ArrayList<>();
