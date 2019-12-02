@@ -27,27 +27,20 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Constants;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+
 import com.morgan.declan.samplelogin.ItemArrayAdapter;
-import com.morgan.declan.samplelogin.MainActivity;
 import com.morgan.declan.samplelogin.Post;
 import com.morgan.declan.samplelogin.R;
 import com.morgan.declan.samplelogin.Upload;
-import com.morgan.declan.samplelogin.User;
 import com.morgan.declan.samplelogin.ui.notifications.NotificationsViewModel;
 
-import java.io.Console;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Retrieves all posts from every user from Firebase and populates recyclerView in fragment
+ * to display each post.*/
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
@@ -55,7 +48,6 @@ public class HomeFragment extends Fragment {
     //uri to store file
     private Uri filePath;
     private final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
 
     private NotificationsViewModel notificationsViewModel;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -71,9 +63,6 @@ public class HomeFragment extends Fragment {
     public List<Upload> uploads;
     public final ArrayList users = new ArrayList();
 
-    private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
-    private FusedLocationProviderClient fusedLocationClient;
-    private FirebaseDatabase mref;
     private DatabaseReference mDatabase;
 
 
@@ -97,9 +86,10 @@ public class HomeFragment extends Fragment {
     }
 
 
+    /**
+     * Fetch all necessary post data to show in recycler view in fragment.*/
     public void fetchData(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         DatabaseReference myRef = database.getReference().child("posts");
         final ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -107,15 +97,11 @@ public class HomeFragment extends Fragment {
                 mPostTargetData.clear();
                 for (DataSnapshot single : dataSnapshot.getChildren()) {
                     for (DataSnapshot second : single.getChildren()) {
-
+                        //Add each retrieved post from Firebase to an array list.
                         Log.e("Posts collector", second.getValue().toString() + "\n");
                         Post target = second.getValue(Post.class);
                         mPostTargetData.add(target);
-
                     }
-                }
-                for( int i=0; i<mPostTargetData.size()-1; i++){
-                    Log.e("OUTPUT ARRAY LIST: ", mPostTargetData.get(i).getPostTitle());
                 }
             }
 
@@ -127,7 +113,7 @@ public class HomeFragment extends Fragment {
         myRef.addValueEventListener(postListener);
 
 
-
+        //Retrieve all Images associated with posts and store in array list.
         DatabaseReference dRef = FirebaseDatabase.getInstance().getReference("picture_uploads");
         dRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -136,6 +122,7 @@ public class HomeFragment extends Fragment {
                 Log.e("childrenCount", ""+dataSnapshot.getChildrenCount());
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     for(DataSnapshot secondSnapshot : postSnapshot.getChildren()){
+                        //Add each image retrieved from Firebase to uploads array list.
                         Upload upload = secondSnapshot.getValue(Upload.class);
                         uploads.add(upload);
                     }
@@ -145,7 +132,6 @@ public class HomeFragment extends Fragment {
                 Log.e("SizeOfUploads_DC" , "" + uploads.size());
                 //creating adapter
                 mAdapter = new ItemArrayAdapter(getContext(),getmPostTargetData(), uploads, R.layout.dashboard_item);
-
                 //adding adapter to recyclerview
                 recyclerView.setAdapter(mAdapter);
 
@@ -158,6 +144,9 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Re initialises the recycler view adapter when user returns to the activity.*/
     @Override
     public void onResume(){
         super.onResume();
@@ -169,27 +158,10 @@ public class HomeFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * @return array list with all posts.*/
     public ArrayList<Post> getmPostTargetData(){
         return mPostTargetData;
-    }
-
-    private class PostHolder extends RecyclerView.ViewHolder {
-        private TextView titleTextView, descTextView;
-
-
-        PostHolder(View itemView) {
-            super(itemView);
-            titleTextView = itemView.findViewById(R.id.item_title);
-            descTextView = itemView.findViewById(R.id.item_desc);
-        }
-
-        void setPost(Post userPost) {
-            String postTitle = userPost.getPostTitle();
-            titleTextView.setText(postTitle);
-            String desc = userPost.getDescription();
-            descTextView.setText(desc);
-        }
-
     }
 
 }

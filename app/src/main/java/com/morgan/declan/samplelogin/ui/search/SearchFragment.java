@@ -41,6 +41,9 @@ import com.morgan.declan.samplelogin.Upload;
 
 import java.util.ArrayList;
 
+/**
+ * Calls an intent to search results activity with extra data containing the text
+ * inputted by the user into each search field.*/
 public class SearchFragment extends Fragment {
 
     private SearchViewModel searchViewModel;
@@ -64,14 +67,6 @@ public class SearchFragment extends Fragment {
         uploadsFromSearchAL = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
-
-//        searchDB();
-//        mAdapter = new ItemArrayAdapter(getContext(), postsFromSearchAL, uploadsFromSearchAL, R.layout.dashboard_item);
-//
-//        //adding adapter to recyclerview
-//        search_rv.setAdapter(mAdapter);
-//
-//        mAdapter.notifyDataSetChanged();
         searchBtn = root.findViewById(R.id.search_button);
         conditionSpinner = root.findViewById(R.id.item_condition_spin);
         sizeSpinner = root.findViewById(R.id.item_size_spin);
@@ -80,6 +75,7 @@ public class SearchFragment extends Fragment {
         brand = root.findViewById(R.id.search_brand);
         colour = root.findViewById(R.id.search_colour);
 
+        //Set size spinner with all options from strings xml file.
         sizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -91,6 +87,8 @@ public class SearchFragment extends Fragment {
                 sizeSelected = null;
             }
         });
+
+        //Set condition spinner with all options from strings xml file.
         conditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -104,6 +102,7 @@ public class SearchFragment extends Fragment {
 
         });
 
+        //calls an intent to search results activity with text from each field as extra data.
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,86 +115,9 @@ public class SearchFragment extends Fragment {
                 resultsPage.putExtra("brandSearch", brandText);
                 resultsPage.putExtra("colourText", colourText);
                 startActivity(resultsPage);
-
             }
         });
         return root;
-    }
-
-
-    public void searchFirebase(String titleSearch, String brandSearch, final String colourSearch){
-        final DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("posts");
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                   String pid = ds.getKey();
-                   Query dbQuery = mRef.child(pid).orderByChild("colour").equalTo(colourSearch);
-                   dbQuery.addValueEventListener(new ValueEventListener() {
-                       @Override
-                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                           for(DataSnapshot dsPosts : dataSnapshot.getChildren()){
-                               Post postFromSearch = dsPosts.getValue(Post.class);
-                               postsFromSearchAL.add(postFromSearch);
-                               getImages(postFromSearch.getUid(), postFromSearch.getPid());
-                               Log.e("DS", dsPosts.getValue().toString());
-                               mAdapter.notifyDataSetChanged();
-                           }
-                       }
-
-                       @Override
-                       public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                       }
-                   });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-        mAdapter = new ItemArrayAdapter(getContext(), postsFromSearchAL, uploadsFromSearchAL, R.layout.dashboard_item);
-
-        //adding adapter to recyclerview
-        search_rv.setAdapter(mAdapter);
-
-        mAdapter.notifyDataSetChanged();
-
-    }
-
-    public void getImages(final String alUid, final String alPid){
-        final DatabaseReference imageDBRef = FirebaseDatabase.getInstance().getReference().child("picture_uploads")
-                .child(alUid).child(alPid);
-        imageDBRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("Outright DS", dataSnapshot.toString());
-
-                Upload userUpload = dataSnapshot.getValue(Upload.class);
-                Log.e("userUpload", userUpload.getUrl());
-                uploadsFromSearchAL.add(userUpload);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mAdapter = new ItemArrayAdapter(getContext(), postsFromSearchAL, uploadsFromSearchAL, R.layout.dashboard_item);
-
-        //adding adapter to recyclerview
-        search_rv.setAdapter(mAdapter);
-
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public ArrayList<Post> getPostsFromSearchAL(){
-        return this.getPostsFromSearchAL();
-    }
-
-    public ArrayList<Upload> getUploadsFromSearchAL(){
-        return this.uploadsFromSearchAL;
     }
 
 }

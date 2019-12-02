@@ -28,6 +28,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Populates activity to show details on a specific post.
+ * This is instantiated when a user clicks on an item from the users profile activity or
+ * in the home fragment.
+ * */
 public class ItemView extends AppCompatActivity {
 
     TextView title, description, size, brand;
@@ -35,8 +40,6 @@ public class ItemView extends AppCompatActivity {
     List<Upload> uploads;
     private String uid;
     private String contactEmail;
-    private Button nextCardBtn;
-    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +47,13 @@ public class ItemView extends AppCompatActivity {
 
         Integer myInt = getIntent().getIntExtra("Description", 0);
         setContentView(R.layout.activity_item_view);
-
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("Loading Image, please wait...");
-        dialog.show();
+        //Load the image from the intent to the image view
         String imageURL = getIntent().getStringExtra("imageURL");
         Log.d("IMAGE URL ", imageURL);
         ImageView ig = findViewById(R.id.postImage);
         Glide.with(this).load(imageURL).into(ig);
-        dialog.dismiss();
 
+        //Set all details about the post to its corresponding text views in activity.
         title = findViewById(R.id.post_view_title);
         final String postTitle = getIntent().getStringExtra("postTitle");
         title.setText(getIntent().getStringExtra("postTitle"));
@@ -68,17 +68,14 @@ public class ItemView extends AppCompatActivity {
 
         getEmailFromPost();
 
-
-
+        //Calls an intent for email application to contact the owner of a post.
         ImageButton contactSeller = findViewById(R.id.contact_seller_btn);
-       // Button contactSellerBtn = findViewById(R.id.contact_seller_btn);
         contactSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //Format the email to be sent to the owner of the post.
                 String[] TO = {contactEmail};
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
-
                 emailIntent.setData(Uri.parse("mailto:"));
                 emailIntent.setType("text/plain");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
@@ -97,6 +94,10 @@ public class ItemView extends AppCompatActivity {
     }
 
 
+    /**
+     * Retrieves the post owners email address to allow user to contact the owner about
+     * a product.
+     * */
     public void getEmailFromPost(){
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -115,7 +116,6 @@ public class ItemView extends AppCompatActivity {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w("Declan.com", "fetchData onCancelled", databaseError.toException());

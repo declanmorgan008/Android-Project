@@ -26,6 +26,8 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
+/**
+ * Populates a recycler view with all posts from a specific search query.*/
 public class SearchResults extends AppCompatActivity {
 
 
@@ -33,11 +35,6 @@ public class SearchResults extends AppCompatActivity {
     private ArrayList<Upload> uploadsFromSearchAL;
     private RecyclerView search_rv;
     public RecyclerView.Adapter mAdapter;
-
-    private Spinner conditionSpinner, sizeSpinner;
-    private String sizeSelected, conditionSelected;
-    private Button searchBtn;
-    private EditText title, brand, colour;
 
 
     @Override
@@ -62,6 +59,8 @@ public class SearchResults extends AppCompatActivity {
         String colourText = extras.getString("colourText");
         postsFromSearchAL.clear();
         uploadsFromSearchAL.clear();
+
+        //Call for a search on each field the user has entered text for.
         if(titleText != null){
             searchFirebase(titleText, "postTitle");
         }
@@ -78,11 +77,16 @@ public class SearchResults extends AppCompatActivity {
     }
 
 
+    /**
+     * Searches Firebase Database for specific posts conforming to a search query.
+     * @param searchType the type of search, e.g. title search, colour search or brand search
+     * @param childName child node in Firebase relating to a specific search query.
+     */
+
     public void searchFirebase(final String searchType, final String childName){
-
-
         final DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("posts");
         mRef.addValueEventListener(new ValueEventListener() {
+            //Gets all posts relating to a specific query.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
@@ -92,6 +96,8 @@ public class SearchResults extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(DataSnapshot dsPosts : dataSnapshot.getChildren()){
+                                //Add each post that is found from a query to an array list and
+                                // retrieve images for the post.
                                 Post postFromSearch = dsPosts.getValue(Post.class);
                                 postsFromSearchAL.add(postFromSearch);
                                 getImages(postFromSearch.getUid(), postFromSearch.getPid());
@@ -102,31 +108,29 @@ public class SearchResults extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
                         }
                     });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-
-
     }
 
+    /**
+     * Retrieves images relating to a specific post.
+     * @param alUid User ID for a specific post.
+     * @param alPid Post ID for a specific post.
+     * */
     public void getImages(final String alUid, final String alPid){
         final DatabaseReference imageDBRef = FirebaseDatabase.getInstance().getReference().child("picture_uploads")
                 .child(alUid).child(alPid);
         imageDBRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("Outright DS", dataSnapshot.toString());
-
+                //Add the image once it has been found to an array list.
                 Upload userUpload = dataSnapshot.getValue(Upload.class);
-                Log.e("userUpload", userUpload.getUrl());
                 uploadsFromSearchAL.add(userUpload);
                 mAdapter.notifyDataSetChanged();
             }
@@ -135,7 +139,6 @@ public class SearchResults extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
     }
 
     @Override
@@ -148,13 +151,4 @@ public class SearchResults extends AppCompatActivity {
 
         mAdapter.notifyDataSetChanged();
     }
-
-    public ArrayList<Post> getPostsFromSearchAL(){
-        return this.getPostsFromSearchAL();
-    }
-
-    public ArrayList<Upload> getUploadsFromSearchAL(){
-        return this.uploadsFromSearchAL;
-    }
-
 }

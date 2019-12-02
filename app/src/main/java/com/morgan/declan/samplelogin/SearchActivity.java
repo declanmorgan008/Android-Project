@@ -4,7 +4,6 @@ package com.morgan.declan.samplelogin;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -31,5 +30,10 @@ public class SearchActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+        finish();
+    }
 }
