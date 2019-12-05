@@ -79,6 +79,20 @@
                 android:gravity="center"
                 android:textSize="14sp"/>
 
+            <TextView
+                android:id="@+id/item_location_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="14sp"/>
+
 
         </LinearLayout>
 

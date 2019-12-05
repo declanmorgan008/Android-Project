@@ -32,8 +32,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -61,7 +64,9 @@ public class AddItemFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private String currentPhotoPath;
-
+    private String location_address;
+    private Double latitude;
+    private Double longitude;
     private EditText et_title;
     private EditText et_desc;
     private String et_title_text;
@@ -89,7 +94,9 @@ public class AddItemFragment extends Fragment {
         buttonChoose = root.findViewById(R.id.choose_image);
         buttonTakePhoto = root.findViewById(R.id.take_photo);
         buttonUpload = root.findViewById(R.id.upload_post_btn);
-
+        location_address = getLocationAddress();
+        latitude = getLatitude();
+        longitude = getLongitude();
         rootView = root;
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -298,7 +305,10 @@ public class AddItemFragment extends Fragment {
                     colour,
                     brand, conditionSelected,
                     description,
-                    currentUser.getUid());
+                    currentUser.getUid(),
+                    location_address,
+                    latitude,
+                    longitude);
             //getting the firebase storage reference.
             myPost.setPid();
             final StorageReference sRef = mStorageReference.child("uploads/" + myPost.getPid() + "." + getFileExtension(filePath));
@@ -360,4 +370,65 @@ public class AddItemFragment extends Fragment {
             Toast.makeText(getActivity(), "Complete all fields before posting", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public String getLocationAddress(){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String address = dataSnapshot.child("address").getValue(String.class);
+                location_address = address;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                location_address = "Unknown";
+            }
+        });
+        return location_address;
+    }
+
+    public Double getLatitude(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Double test = dataSnapshot.child("latitude").getValue(Double.class);
+                latitude= test;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+
+            }
+        });
+        return latitude;
+
+    }
+
+    public Double getLongitude(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                longitude = dataSnapshot.child("longitude").getValue(Double.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+
+            }
+        });
+        return longitude;
+    }
+
 }

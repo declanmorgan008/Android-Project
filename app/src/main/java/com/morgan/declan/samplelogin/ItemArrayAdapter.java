@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
     ViewHolder vH;
     private View.OnClickListener btnListener;
     private RecyclerViewClickListener itemListener;
+    private static Location location = new Location("location");
 
     /**
      * Create a new array adapter and store parameters as local variables.
@@ -64,10 +66,19 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
      * @param populateActivity integer representing the activity to populate.
      * @param uploads array list with all images linked to posts to be displayed.*/
     public ItemArrayAdapter(Context context, ArrayList<Post> mTargetData, List<Upload> uploads, Integer populateActivity) {
+        setLocation();
         this.context = context;
         this.targetsArrayList = mTargetData;
         this.uploads = uploads;
         this.activityToPopulate = populateActivity;
+    }
+
+    public ArrayList<Post> getPosts(){
+        return this.targetsArrayList;
+    }
+
+    public List<Upload> getUploads(){
+        return this.uploads;
     }
 
     /**
@@ -126,9 +137,7 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         //Load user profile image into the imageview.
                         userPhotoUri = dataSnapshot.getValue(String.class);
-                        Glide.with(context)
-                                .load(userPhotoUri)
-                                .apply(RequestOptions.circleCropTransform())
+                        Glide.with(context).load(userPhotoUri).apply(RequestOptions.circleCropTransform())
                                 .into(vH.userDP);
                     }
 
@@ -171,7 +180,7 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
      * Inner class to create a view holder to store data in recycler view.
      * class references view items in activity and populates them accordingly.*/
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        protected TextView item, desc, size, brand, condition, username;
+        protected TextView item, desc, size, brand, condition, username , location_address , distance;
         protected ImageView imageView, userDP;
         protected Button deleteButton;
         protected Integer activity;
@@ -200,6 +209,8 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
                 size = itemView.findViewById(R.id.item_size);
                 brand = itemView.findViewById(R.id.item_brand);
                 condition = itemView.findViewById(R.id.item_condition);
+                location_address = itemView.findViewById(R.id.item_location_address);
+                distance = itemView.findViewById(R.id.distance);
             }
         }
 
@@ -242,9 +253,14 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
                 String mySize = "<b>" + "Size: " + "</b>" + post.getSize();
                 String myBrand = "<b>" + "brand: " + "</b>" + post.getBrand();
                 String myCondition = "<b>" + "Condition: " + "</b>" + post.getCondition();
+                String myLocation = "<b>" + "Location: " + "</b>" + post.getAddress();
+                int d = getDistance(post); //D
+                String myDistance = "<b>" + "Distance: " + "</b>" + d + "km";
                 this.size.setText(Html.fromHtml(mySize));
                 this.brand.setText(Html.fromHtml(myBrand));
                 this.condition.setText(Html.fromHtml(myCondition));
+                this.location_address.setText(Html.fromHtml(myLocation));
+                this.distance.setText(Html.fromHtml(myDistance));
             }
         }
 
@@ -270,5 +286,48 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
                 context.startActivity(intent);
             }
         }
+    }
+    public void setLocation(){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Double lat = dataSnapshot.child("latitude").getValue(Double.class);
+                Double lon = dataSnapshot.child("longitude").getValue(Double.class);
+                setLocationSub(lat,lon);//C
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("NOTHING");
+            }
+        });
+
+    }
+
+    public void setLocationSub(Double lat, Double lon){
+        if(lat!=null && lon!=null) {
+            location.setLongitude(lon);
+            location.setLatitude(lat);
+        }
+    }
+
+    private Integer getDistance(Post post){
+
+        Location loc2 = new Location("loc2");
+
+        if(post.getLatitude()!=null && post.getLongitude()!=null) {
+            loc2.setLatitude(post.getLatitude());
+            loc2.setLongitude(post.getLongitude());
+        }
+        int d = Math.round(location.distanceTo(loc2)/1000);
+        return d;
+
+    }
+
+    public static Location getLocation(){
+        return location;
     }
 }

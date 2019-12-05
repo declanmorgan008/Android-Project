@@ -1,12 +1,19 @@
 package com.morgan.declan.samplelogin;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.ActionCodeSettings;
@@ -34,6 +41,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -48,6 +57,8 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -65,6 +76,11 @@ public class RegisterActivity extends AppCompatActivity {
     private Uri userDownloadUri;
 
     private FirebaseAuth mAuth;
+
+    private static String location_address;
+    static android.location.Location loc;
+    private static final int PERMISSION_ACCESS_FINE_LOCATION = 1;
+    private FusedLocationProviderClient fusedLocationClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,24 +89,20 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userDP = findViewById(R.id.choose_dp_button);
         initializeUI();
-
         userDownloadUri = Uri.parse("http://www.google.com");
-
-        //Calls the register new user method to create a new user.
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 registerNewUser();
             }
         });
-        //Calls the show file chooser method to allow user to choose image for profile
-        //display picture.
         userDP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showFileChooser();
             }
         });
+        Location();
     }
 
     /**
@@ -132,8 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
                             //Create a new user with name and email address.
-                            User newUser = new User(displayName, email);
-                            //Write the new user to Firebase
+                            User newUser = new User(displayName, email , getLocationAddress(), loc.getLatitude(), loc.getLongitude());
                             newUser.writeUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
                             //Update user profile on Firebase to add a display name.
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
@@ -235,5 +246,78 @@ public class RegisterActivity extends AppCompatActivity {
         regBtn = findViewById(R.id.register);
         progressBar = findViewById(R.id.progressBar);
         nameTV = findViewById(R.id.displayName);
+    }
+
+    private void Location() {
+
+        //Check if Location Permission Allowed on Device. If not available prompt user to Allow.
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_ACCESS_FINE_LOCATION);
+        }
+
+        //Google Play Location stored in loc variable
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+
+
+                    @Override
+                    public void onSuccess(Location location) {
+
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            loc = location;
+                            getAddressFromLocation(loc.getLatitude(), loc.getLongitude());
+
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All good!
+                } else {
+                    Toast.makeText(this, "Need your location!", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+        }
+    }
+
+    private void getAddressFromLocation(double latitude, double longitude) {
+
+        Geocoder geocoder = new Geocoder(this, Locale.ENGLISH);
+
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                if(address.getThoroughfare()==null && address.getThoroughfare()==null) {
+                    location_address = address.getCountryName();
+                }else if(address.getThoroughfare()==null && address.getThoroughfare()!=null){
+                    location_address = address.getAdminArea() + ", " + address.getCountryName();
+                }else
+                    location_address = address.getThoroughfare() + ", " + address.getAdminArea() + ", " + address.getCountryName();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public static Location getLocation(){
+        return loc;
+    }
+    public static String getLocationAddress() {
+        return location_address;
     }
 }

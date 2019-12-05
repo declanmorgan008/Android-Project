@@ -9,12 +9,12 @@ import java.util.ArrayList;
  * Creates a user instance storing user details to be posted to Firebase Database.
  * */
 public class User {
-
     public String username;
     public String email;
     public long time;
-    public Location location;
+    public Double latitude,longitude;
     public String photoUri;
+    public String address;
 
     public User(){
 
@@ -24,11 +24,16 @@ public class User {
      * Creates a user instance
      * @param email user email address provided on registration.
      * @param uname username stated by user on registration.*/
-    public User(String uname, String email){
+    public User(String uname, String email, String address, Double latitude, Double longitude){
         this.username = uname;
         this.email = email;
         this.time = System.currentTimeMillis();
         this.photoUri = "empty";
+
+        this.address = address;
+
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     /**
@@ -38,12 +43,16 @@ public class User {
      * @param location users location when registering.
      * @param photoUri user display picture URI.
      * */
-    public User(String uname, String email, Location location, String photoUri){
+    public User(String uname, String email, String photoUri, String address, Double latitude, Double longitude){
         this.username = uname;
         this.email = email;
-        this.location = location;
+
         this.time = System.currentTimeMillis();
         this.photoUri = photoUri;
+        this.address = address;
+
+        this.latitude = latitude;
+        this.longitude = longitude;
 
     }
 
@@ -51,16 +60,12 @@ public class User {
      * Writes user to Firebase Database as a child of 'users' using their userID as key.
      * @param userId ID of user provided by Firebase when writing new child to database.*/
     public void writeUser(String userId) {
-        User newUser = new User(this.username, this.email, this.location, this.photoUri);
+        User newUser = new User(this.username, this.email, this.photoUri, this.address, this.latitude, this.longitude);
         FirebaseDatabase.getInstance().getReference().child("users").child(userId).setValue(newUser);
     }
 
-    /**
-    * set the users location.
-     * @param userLocation new location of user.*/
-    public void setLocation(Location userLocation){
-        this.location = userLocation;
-    }
+
+    public String GetLocationAddress(){ return address;}
 
     /**
      * @return user email address.*/

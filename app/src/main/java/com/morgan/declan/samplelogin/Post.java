@@ -1,5 +1,6 @@
 package com.morgan.declan.samplelogin;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
@@ -31,16 +32,19 @@ public class Post {
     public String description;
     public String uid;
     public Uri picture;
-    public StorageReference pictureReference;
+    public String address;
+    public Double latitude;
+    public Double longitude;
+    public Location loc;
 
     private StorageReference mStorageRef;
     public Post(){};
-    public Post(String name, String size, String colour, String brand, String condition, String description){
+    public Post(String name, String size, String colour, String brand, String condition, String description , String address ,  Double latitude, Double longitude){
 
     }
 
     public Post(String title, String size, String colour, String brand,
-                String condition, String description, String uid){
+                String condition, String description, String uid , String address, Double latitude, Double longitude ){
         this.postTitle = title;
         this.size = size;
         this.colour = colour;
@@ -48,11 +52,15 @@ public class Post {
         this.condition = condition;
         this.description = description;
         this.uid = uid;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
 
     }
 
+
     public Post(String title, String size, String colour, String brand,
-                String condition, String description, String uid, Uri picture){
+                String condition, String description, String uid, Uri picture, String address, Double latitude, Double longitude){
         this.postTitle = title;
         this.size = size;
         this.colour = colour;
@@ -61,11 +69,16 @@ public class Post {
         this.description = description;
         this.uid = uid;
         this.picture = picture;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+
     }
 
     /**
      * Uploads a post instance to Firebase Database.
      * @param myPost post to be uploaded to Firebase.*/
+
     public void postToDatabase (Post myPost){
         mStorageRef = FirebaseStorage.getInstance().getReference();
         Post newPost = myPost;
@@ -75,7 +88,10 @@ public class Post {
                 + ", "  +               this.getColour()
                 + ", "  +              this.getCondition()
                 + ", "  +               this.getSize()
-                + ", "  + this.getPicture());
+                + ", "  + this.getPicture()
+                + ", "  +               this.getAddress()
+                + ", "  +               this.getLatitude()
+                + ", "  +               this.getLongitude());
 
         FirebaseDatabase.getInstance().getReference().child("posts").child(uid).child(newPost.getPid()).setValue(newPost);
         Log.e("sampleLogIn", "Completed Post Upload");
@@ -87,6 +103,11 @@ public class Post {
      * @return post title*/
     public String getPostTitle(){
         return this.postTitle;
+    }
+
+
+    public void setPostTitle(String postTitle){
+        this.postTitle = postTitle;
     }
 
     /**
@@ -196,6 +217,27 @@ public class Post {
      * */
     public void setUid(String uid){
         this.uid = uid;
+    }
+
+    public String getAddress(){
+        return this.address;
+    }
+
+    public void setAddress(String address){ this.address = address;
+    }
+
+    public Double getLatitude(){
+        return this.latitude;
+    }
+
+    public void setLatitude(Double latitude){ this.latitude = latitude;
+    }
+
+    public Double getLongitude(){
+        return this.longitude;
+    }
+
+    public void setLongitude(Double longitude){ this.longitude = longitude;
     }
 
 }
