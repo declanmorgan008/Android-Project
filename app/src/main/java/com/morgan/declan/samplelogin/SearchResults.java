@@ -39,7 +39,7 @@ public class SearchResults extends AppCompatActivity {
     private ArrayList<String> uidList;
     private TextView resultsInfo;
 
-
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
