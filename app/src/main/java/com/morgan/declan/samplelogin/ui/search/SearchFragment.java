@@ -108,7 +108,7 @@ public class SearchFragment extends Fragment {
             public void onClick(View view) {
                 String titleText = title.getText().toString().toLowerCase();
                 String brandText = brand.getText().toString().toLowerCase();
-                String colourText = brand.getText().toString().toLowerCase();
+                String colourText = colour.getText().toString().toLowerCase();
                 //searchFirebase(titleText, brandText, colourText);
                 Intent resultsPage = new Intent(getActivity(), SearchResults.class);
                 resultsPage.putExtra("titleSearch", titleText);

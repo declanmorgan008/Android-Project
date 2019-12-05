@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,9 @@ public class SearchResults extends AppCompatActivity {
     private ArrayList<Upload> uploadsFromSearchAL;
     private RecyclerView search_rv;
     public RecyclerView.Adapter mAdapter;
+    private ArrayList<String> uidList;
+    private TextView resultsInfo;
+
 
 
     @Override
@@ -44,12 +48,15 @@ public class SearchResults extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        uidList = new ArrayList<>();
         postsFromSearchAL = new ArrayList<>();
         uploadsFromSearchAL = new ArrayList<>();
+
+        resultsInfo = findViewById(R.id.results_info_tv);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
         search_rv = findViewById(R.id.search_results_list);
         search_rv.setHasFixedSize(true);
-        layoutManager.setReverseLayout(true);
         search_rv.setLayoutManager(layoutManager);
         mAdapter = new ItemArrayAdapter(getApplicationContext(), postsFromSearchAL, uploadsFromSearchAL, R.layout.dashboard_item);
         search_rv.setAdapter(mAdapter);
@@ -60,18 +67,19 @@ public class SearchResults extends AppCompatActivity {
         postsFromSearchAL.clear();
         uploadsFromSearchAL.clear();
 
+        Log.e("Before searching: ", titleText + ", " + brandText + ", " + colourText);
         //Call for a search on each field the user has entered text for.
-        if(titleText != null){
-            searchFirebase(titleText, "postTitle");
+        if(!titleText.isEmpty() && !colourText.isEmpty() && !brandText.isEmpty()){
+            searchFirebase(titleText, colourText, brandText, 1);
+        }else if(!titleText.isEmpty() && !colourText.isEmpty() && brandText.isEmpty()){
+            searchFirebase(titleText, colourText, brandText, 2);
+        }else if(!titleText.isEmpty() && colourText.isEmpty() && !brandText.isEmpty()) {
+            searchFirebase(titleText, colourText, brandText, 3);
+        }else if(!titleText.isEmpty() && colourText.isEmpty() && brandText.isEmpty()){
+            searchFirebase(titleText, colourText, brandText, 4);
         }
 
-        if(colourText != null){
-            searchFirebase(colourText, "colour");
-        }
-
-        if(brandText != null){
-            searchFirebase(brandText, "brand");
-        }
+        resultsInfo.setVisibility(View.INVISIBLE);
 
 
     }
@@ -79,37 +87,83 @@ public class SearchResults extends AppCompatActivity {
 
     /**
      * Searches Firebase Database for specific posts conforming to a search query.
-     * @param searchType the type of search, e.g. title search, colour search or brand search
-     * @param childName child node in Firebase relating to a specific search query.
+     * @param titleToSearch the type of search, e.g. title search, colour search or brand search
+     *
      */
 
-    public void searchFirebase(final String searchType, final String childName){
+    public void searchFirebase(final String titleToSearch,
+                                final String colourToSearch,
+                               final String brandToSearch,
+                               final int searchType){
+        postsFromSearchAL.clear();
         final DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("posts");
         mRef.addValueEventListener(new ValueEventListener() {
             //Gets all posts relating to a specific query.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    String pid = ds.getKey();
-                    Query dbQuery = mRef.child(pid).orderByChild(childName).equalTo(searchType);
-                    dbQuery.addValueEventListener(new ValueEventListener() {
+                    String uid = ds.getKey();
+
+                    uidList.add(uid);
+                    Log.e("usrr id list", uidList.toString());
+
+                    FirebaseDatabase.getInstance().getReference().child("posts").child(uid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for(DataSnapshot dsPosts : dataSnapshot.getChildren()){
-                                //Add each post that is found from a query to an array list and
-                                // retrieve images for the post.
-                                Post postFromSearch = dsPosts.getValue(Post.class);
-                                postsFromSearchAL.add(postFromSearch);
-                                getImages(postFromSearch.getUid(), postFromSearch.getPid());
-                                Log.e("DS", dsPosts.getValue().toString());
+                            for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                                Post foundPost = postSnapshot.getValue(Post.class);
+                                String postTitle = foundPost.getPostTitle().toLowerCase();
+                                String postColour = foundPost.getColour().toLowerCase();
+                                String postBrand = foundPost.getBrand().toLowerCase();
+                                Log.e("brand", postBrand);
+                                Log.e("titles", titleToSearch + ", " + colourToSearch + ", " + brandToSearch);
+
+                                switch(searchType){
+                                    case 1:
+                                        if(postTitle.contains(titleToSearch)
+                                                && postColour.contains(colourToSearch)
+                                                && postBrand.contains(brandToSearch)){
+                                            postsFromSearchAL.add(foundPost);
+                                            getImages(foundPost.getUid(), foundPost.getPid());
+                                            Log.e("all three", foundPost.toString());
+                                        }
+                                        break;
+                                    case 2:
+                                        if(postTitle.contains(titleToSearch)
+                                                && postColour.contains(colourToSearch)){
+                                            postsFromSearchAL.add(foundPost);
+                                            getImages(foundPost.getUid(), foundPost.getPid());
+                                            Log.e("title & colour", foundPost.toString());
+                                        }
+                                        break;
+                                    case 3:
+                                        if(postTitle.contains(titleToSearch)
+                                                && postBrand.contains(brandToSearch)){
+                                            postsFromSearchAL.add(foundPost);
+                                            getImages(foundPost.getUid(), foundPost.getPid());
+                                            Log.e("title & brand", foundPost.toString());
+                                        }
+                                        break;
+                                    case 4:
+                                        if(postTitle.contains(titleToSearch)){
+                                            postsFromSearchAL.add(foundPost);
+                                            getImages(foundPost.getUid(), foundPost.getPid());
+                                            Log.e("title", foundPost.toString());
+                                        }
+                                        break;
+
+                                }
                             }
-                            mAdapter.notifyDataSetChanged();
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
+
                         }
                     });
+                    Log.e("POSTS SIZE", "" + postsFromSearchAL.size());
+                    mAdapter.notifyDataSetChanged();
+
                 }
             }
             @Override
@@ -117,6 +171,7 @@ public class SearchResults extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * Retrieves images relating to a specific post.
@@ -132,6 +187,7 @@ public class SearchResults extends AppCompatActivity {
                 //Add the image once it has been found to an array list.
                 Upload userUpload = dataSnapshot.getValue(Upload.class);
                 uploadsFromSearchAL.add(userUpload);
+                Log.e("UPLOADS SIZE", "" + uploadsFromSearchAL.size());
                 mAdapter.notifyDataSetChanged();
             }
 

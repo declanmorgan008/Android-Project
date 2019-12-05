@@ -128,6 +128,7 @@ public class NotificationsFragment extends Fragment {
         changeEmail = root.findViewById(R.id.change_email_btn);
         changePicture = root.findViewById(R.id.change_profile_img_btn);
 
+        //Set on click listener to call changeEmail method.
         changeEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,6 +136,7 @@ public class NotificationsFragment extends Fragment {
             }
         });
 
+        //Set on click listener for intent to manage posts.
         managePosts = root.findViewById(R.id.manage_posts_btn);
         managePosts.setOnClickListener(new View.OnClickListener() {
             @Override

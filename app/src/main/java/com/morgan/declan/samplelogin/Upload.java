@@ -27,14 +27,20 @@ public class Upload{
         this.post_id = post_id;
     }
 
+    /**
+     * @return name given to upload file.*/
     public String getName() {
         return name;
     }
 
+    /**
+     * @return url for image retrieval.*/
     public String getUrl() {
         return url;
     }
 
+    /**
+     * @return Post ID referencing image.*/
     public String getPost_id(){
         return this.post_id;
     }
