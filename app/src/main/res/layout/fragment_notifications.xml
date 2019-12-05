@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/buttonColor">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:orientation="vertical"
+            android:background="@color/colorPrimary"
+            android:id="@+id/profile_background"
+            android:paddingBottom="10dp">
+            <ImageView
+                android:layout_marginTop="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="120dp"
+                android:layout_height="121dp"
+                android:src="@drawable/man"
+                android:id="@+id/profile_picture"/>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:id="@+id/username"/>
+            <Button
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:background="@drawable/round_button_transparent"
+                android:text="change profile image"
+                android:textSize="12sp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:id="@+id/change_profile_img_btn"/>
+            <Button
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:background="@drawable/round_button_transparent"
+                android:text="change email"
+                android:clickable="true"
+                android:textSize="12sp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:id="@+id/change_email_btn"/>
+            <Button
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:background="@drawable/round_button_transparent"
+                android:text="manage posts"
+                android:clickable="true"
+                android:textSize="12sp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:id="@+id/manage_posts_btn"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_items"
+            android:id="@+id/user_items_tv"
+            android:textSize="16sp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/item_list"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scrollbars="horizontal"/>
+    </LinearLayout>
+
+</LinearLayout>
