@@ -222,6 +222,26 @@ public class ManagePosts extends AppCompatActivity {
         };
         myRef.addValueEventListener(postListener);
 
+        final DatabaseReference uploadsRef = database.getReference().child("picture_uploads").child(uid);
+        ValueEventListener pictureListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot single : dataSnapshot.getChildren()) {
+                    if(single.getKey().equals(post.getPid())){
+                        //Remove the post from Firebase.
+                        Log.e("Delete Post Loop", single.getKey() + ", " + post.getPid());
+                        myRef.child(single.getKey()).removeValue();
+                    }
+                }
+                //Update the adapter.
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+        myRef.addValueEventListener(postListener);
+
         //Removing the image from Firebase Storage.
         StorageReference mStorage = FirebaseStorage.getInstance().getReference().child("uploads/").child(post.getPid()+".jpg");
         mStorage.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
